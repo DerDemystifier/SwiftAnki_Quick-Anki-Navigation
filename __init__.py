@@ -150,87 +150,12 @@ from aqt.deckbrowser import DeckBrowserContent
 def on_deck_browser_will_render_content(
     deck_browser: DeckBrowser, content: DeckBrowserContent
 ):
+    # For debugging
+    if len(sys.path) > sys_path_count:
+        return
     tree_html = content.tree
     # Your custom JavaScript code
-    custom_js = """
-    <script>
-    var keypressTimeout;
+    with open(os.path.join(addon_path, "deckbrowser_code.js"), "r") as f:
+        custom_js = f"<script>{f.read()}</script>"
 
-    document.addEventListener('keydown', function(event) {
-        var currentDeck = document.querySelector('tr.deck.current');
-        if (!currentDeck) return;
-
-        switch (event.code) {
-            case 'ArrowUp':
-            case 'ArrowDown':            
-                event.preventDefault();
-                
-                var decks = Array.from(document.querySelectorAll('tr.deck'));
-                var currentIndex = decks.indexOf(currentDeck);
-                var nextIndex = currentIndex + (event.code === 'ArrowDown' ? 1 : -1);
-                
-                // Boundary conditions
-                if (nextIndex < 0 || nextIndex >= decks.length) return;
-                
-                // Remove 'current' class from the current deck and add it to the next one
-                currentDeck.classList.remove('current');
-                var nextDeck = decks[nextIndex];
-                nextDeck.classList.add('current');
-                
-                // Scroll into view if out of viewport
-                nextDeck.scrollIntoView({block: 'nearest', behavior: 'smooth'});
-                
-                
-                // Clear any existing timeout to reset the timer
-                clearTimeout(keypressTimeout);
-
-                // Set a new timeout
-                keypressTimeout = setTimeout(function() {
-                    var deckId = currentDeck.id;
-                    if (deckId) {
-                        pycmd("select:" + deckId);
-                    }
-                }, 100); // Wait for 100ms before running the pycmd command
-                break;
-            case 'ArrowRight':
-            case 'ArrowLeft':
-                // Get the id of the current deck
-                var deckId = currentDeck.id;
-                // Check if a deckId was found and construct the pycmd
-                if (deckId) {
-                    pycmd("select:" + deckId);
-                }
-                // Simulate click on the collapse/expand link within the selected deck
-                var collapseLink = currentDeck.querySelector('td.decktd > a.collapse');
-                if (collapseLink) collapseLink.click();
-                break;
-            case 'KeyO':
-                // Get the id of the current deck
-                var deckId = currentDeck.id;
-                // Check if a deckId was found and construct the pycmd
-                if (deckId) {
-                    pycmd("select:" + deckId);
-                }
-                // Simulate click on the options link within the selected deck
-                var optsLink = currentDeck.querySelector('td.opts > a');
-                if (optsLink) optsLink.click();
-                break;
-            case 'KeyD':
-                // Get the id of the current deck
-                var deckId = currentDeck.id;
-                // Check if a deckId was found and construct the pycmd
-                if (deckId) {
-                    pycmd("select:" + deckId);
-                }
-                break
-            case 'Enter':
-                // Simulate click on the deck link within the selected deck
-                var deckLink = currentDeck.querySelector('td.decktd > a.deck');
-                if (deckLink) deckLink.click();
-                break;
-
-        }
-    });
-    </script>
-    """
     content.tree += custom_js  # Append your custom JavaScript to the tree_html
