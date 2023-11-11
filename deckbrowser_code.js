@@ -1,7 +1,6 @@
-var keypressTimeout = -1;
-
 document.addEventListener('keydown', function (event) {
     var currentDeck = document.querySelector('tr.deck.current');
+    console.log('currentDeck :>> ', currentDeck);
     if (!currentDeck) return;
 
     switch (event.code) {
@@ -23,21 +22,6 @@ document.addEventListener('keydown', function (event) {
 
             // Scroll into view if out of viewport
             nextDeck.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-
-
-            // Clear any existing timeout to reset the timer
-            clearTimeout(keypressTimeout);
-
-            console.log(keypressTimeout);
-
-            // Set a new timeout
-            keypressTimeout = setTimeout(function () {
-                var deckId = nextDeck.id;
-                if (deckId) {
-                    console.log("Selecting deck ", nextDeck);
-                    pycmd("select:" + deckId);
-                }
-            }, 200); // Wait for 300ms before running the pycmd command
             break;
         case 'ArrowRight':
         case 'ArrowLeft':
@@ -69,12 +53,25 @@ document.addEventListener('keydown', function (event) {
             if (deckId) {
                 pycmd("select:" + deckId);
             }
+            pycmd('decks');
+            break;
+        case 'KeyA':
+            // Get the id of the current deck
+            var deckId = currentDeck.id;
+            // Check if a deckId was found and construct the pycmd
+            if (deckId) {
+                pycmd("select:" + deckId);
+            }
+            console.log('deckId :>> ', deckId);
+            pycmd("add");
+
+            // alert("HAYOOOOOOOOO");
             break;
         case 'Enter':
+        case 'KeyS':
             // Simulate click on the deck link within the selected deck
             var deckLink = currentDeck.querySelector('td.decktd > a.deck');
             if (deckLink) deckLink.click();
             break;
-
     }
 });
