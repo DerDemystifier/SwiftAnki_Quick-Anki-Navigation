@@ -46,29 +46,26 @@ document.addEventListener('keydown', function (event) {
             var optsLink = currentDeck.querySelector('td.opts > a');
             if (optsLink) optsLink.click();
             break;
-        case 'KeyD':
-            // Get the id of the current deck
-            var deckId = currentDeck.id;
-            // Check if a deckId was found and construct the pycmd
-            if (deckId) {
-                pycmd("select:" + deckId);
-            }
-            pycmd('decks');
-            break;
         case 'KeyA':
+
             // Get the id of the current deck
             var deckId = currentDeck.id;
             // Check if a deckId was found and construct the pycmd
             if (deckId) {
                 pycmd("select:" + deckId);
             }
-            console.log('deckId :>> ', deckId);
-            pycmd("add");
 
-            // alert("HAYOOOOOOOOO");
+            console.log('deckId :>> ', deckId);
+            pycmd('openAddDialog');
             break;
-        case 'Enter':
         case 'KeyS':
+            // Get the id of the current deck
+            var deckId = currentDeck.id;
+            // Check if a deckId was found and construct the pycmd
+            if (deckId) {
+                pycmd("select:" + deckId);
+            }
+        case 'Enter':
             // Simulate click on the deck link within the selected deck
             var deckLink = currentDeck.querySelector('td.decktd > a.deck');
             if (deckLink) deckLink.click();
