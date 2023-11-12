@@ -1,6 +1,6 @@
 import os
 import sys
-from aqt import mw
+from aqt import QCoreApplication, QEvent, QMouseEvent, QPoint, QTimer, QWidget, Qt, mw
 from aqt import gui_hooks, deckbrowser
 from aqt.deckbrowser import DeckBrowser, DeckBrowserContent
 from aqt.utils import tooltip
@@ -77,6 +77,12 @@ def on_state_did_change(new_state: MainWindowState, old_state: MainWindowState):
     if new_state == "deckBrowser":
         # Retrieve all QShortcut objects that are children of the main window
         switchShortcutsTo("ASD", False)
+        # widgets = [child for child in mw.children() if isinstance(child, QWidget)]
+        # widgets = [child for child in widgets[0].children() if isinstance(child, QWidget)]
+        # with open('R:/aa.txt', 'w') as f:
+        #     f.write(str(widgets))
+        # widgets[1].setFocus()
+        mw.web.setFocus()
 
 
 @gui_hooks.state_shortcuts_will_change.append
@@ -116,3 +122,8 @@ def on_webview_did_receive_js_message(
     else:
         # some other command, pass it on
         return handled
+
+@gui_hooks.focus_did_change.append
+def on_focus_did_change(new: QWidget, old: QWidget):
+    if mw.web.isVisible():
+        mw.web.setFocus()
