@@ -1,27 +1,33 @@
 document.addEventListener('keydown', function (event) {
     var currentDeck = document.querySelector('tr.deck.current');
-    console.log('currentDeck :>> ', currentDeck);
     if (!currentDeck) return;
 
     switch (event.code) {
-        case 'ArrowUp':
+        case 'ArrowUp':            
         case 'ArrowDown':
             event.preventDefault();
+			
+			let direction = event.code === 'ArrowUp' ? "Up" : "Down";
 
             var decks = Array.from(document.querySelectorAll('tr.deck'));
             var currentIndex = decks.indexOf(currentDeck);
-            var nextIndex = currentIndex + (event.code === 'ArrowDown' ? 1 : -1);
+            var nextIndex = currentIndex + (direction === 'Up' ? -1 : 1);
 
             // Boundary conditions
-            if (nextIndex < 0 || nextIndex >= decks.length) return;
+            if (nextIndex < 0 || nextIndex >= decks.length) { window.scrollBy({ top: direction === 'Up' ? -10 : 10, behavior: 'smooth' }); return };
 
             // Remove 'current' class from the current deck and add it to the next one
             currentDeck.classList.remove('current');
             var nextDeck = decks[nextIndex];
             nextDeck.classList.add('current');
+			
+			var scrollToDeck = decks[nextIndex + (direction === 'Up' ? -3 : 3)];
 
             // Scroll into view if out of viewport
             nextDeck.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+			
+			// Scroll ahead to show neighbors too
+			scrollToDeck?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
             break;
         case 'ArrowRight':
         case 'ArrowLeft':
