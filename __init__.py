@@ -74,6 +74,8 @@ def on_state_did_change(new_state: MainWindowState, old_state: MainWindowState):
 
     # showInfo(new_state)
 
+    tooltip(new_state)
+
     if new_state == "deckBrowser":
         # Retrieve all QShortcut objects that are children of the main window
         switchShortcutsTo("ASD", False)
@@ -83,15 +85,17 @@ def on_state_did_change(new_state: MainWindowState, old_state: MainWindowState):
         #     f.write(str(widgets))
         # widgets[1].setFocus()
         mw.web.setFocus()
+    else:
+        switchShortcutsTo("ASD", True)
 
 
-@gui_hooks.state_shortcuts_will_change.append
-def on_state_shortcuts_will_change(state, shortcuts):
-    # For debugging
-    if len(sys.path) > sys_path_count:
-        return
+# @gui_hooks.state_shortcuts_will_change.append
+# def on_state_shortcuts_will_change(state, shortcuts):
+# # For debugging
+# if len(sys.path) > sys_path_count:
+# return
 
-    switchShortcutsTo("ASD", True)
+# switchShortcutsTo("ASD", True)
 
 
 def switchShortcutsTo(keys_string: str, state: bool):
@@ -122,6 +126,7 @@ def on_webview_did_receive_js_message(
     else:
         # some other command, pass it on
         return handled
+
 
 @gui_hooks.focus_did_change.append
 def on_focus_did_change(new: QWidget, old: QWidget):
