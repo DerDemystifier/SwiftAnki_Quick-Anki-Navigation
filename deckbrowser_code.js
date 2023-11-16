@@ -1,5 +1,5 @@
 document.addEventListener('keydown', function (event) {
-    var currentDeck = document.querySelector('tr.deck.current');
+    var currentDeck = document.querySelector(currentDeckSelector);
     if (!currentDeck) return;
 
     currentDeck.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -16,7 +16,7 @@ document.addEventListener('keydown', function (event) {
             var nextIndex = currentIndex + (direction === 'Up' ? -1 : 1);
 
             // Boundary conditions
-            if (nextIndex < 0 || nextIndex >= decks.length) { window.scrollBy({ top: direction === 'Up' ? -10 : 10, behavior: 'smooth' }); return; };
+            if (nextIndex < 0 || nextIndex >= decks.length) { window.scrollBy({ top: direction === 'Up' ? -20 : 20, behavior: 'smooth' }); return; };
 
             // Remove 'current' class from the current deck and add it to the next one
             currentDeck.classList.remove('current');
@@ -78,3 +78,21 @@ document.addEventListener('keydown', function (event) {
             break;
     }
 });
+
+
+
+var observer = new IntersectionObserver(handleIntersect, { threshold: 1.0 });
+var currentDeckSelector = 'tr.deck.current';
+
+observer.observe(document.querySelector(currentDeckSelector));
+
+function handleIntersect(entries, observer) {
+    entries.forEach(entry => {
+        if (!entry.isIntersecting) {
+            // Element has gone out of view, scroll it into view
+            entry.target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            observer.disconnect();
+        }
+    });
+}
+
