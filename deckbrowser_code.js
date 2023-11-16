@@ -23,6 +23,8 @@ document.addEventListener('keydown', function (event) {
             var nextDeck = decks[nextIndex];
             nextDeck.classList.add('current');
 
+            pycmd(`setCurrentDeck:${nextDeck.id}`);
+
             var scrollToDeck = decks[nextIndex + (direction === 'Up' ? -3 : 3)];
 
             // Scroll into view if out of viewport

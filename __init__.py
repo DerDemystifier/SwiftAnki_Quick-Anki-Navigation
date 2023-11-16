@@ -1,25 +1,17 @@
 import os
+import re
 import sys
-from aqt import QCoreApplication, QEvent, QMouseEvent, QPoint, QTimer, QWidget, Qt, mw
-from aqt import gui_hooks, deckbrowser
+from aqt import QWidget, mw, gui_hooks
 from aqt.deckbrowser import DeckBrowser, DeckBrowserContent
-from aqt.utils import tooltip
-from aqt.utils import showInfo
-from aqt.debug_console import show_debug_console
-from aqt import mw
-from aqt.utils import showInfo
+from aqt.toolbar import TopToolbar
+from aqt.utils import tooltip, showInfo
 from aqt.qt import QShortcut, QKeySequence
-from aqt import gui_hooks
-from aqt.deckbrowser import DeckBrowser
-from aqt.deckbrowser import DeckBrowserContent
-
-from aqt import gui_hooks
-from aqt.deckbrowser import DeckBrowser
-from aqt.deckbrowser import DeckBrowserContent
 from aqt.main import MainWindowState
 
 addon_path = os.path.dirname(os.path.realpath(__file__))
 
+if not mw:
+    quit()
 
 # For debugging
 sys_path_count = len(sys.path)
@@ -28,7 +20,7 @@ sys_path_count = len(sys.path)
 
 
 @gui_hooks.deck_browser_did_render.append
-def browser_render(browser: deckbrowser.DeckBrowser):
+def browser_render(browser: DeckBrowser):
     # For debugging
     if len(sys.path) > sys_path_count:
         return
@@ -110,18 +102,42 @@ def switchShortcutsTo(keys_string: str, state: bool):
             # mw.releaseShortcut(shortcut)
 
 
+currentDeck = 0
+
+
 @gui_hooks.webview_did_receive_js_message.append
 def on_webview_did_receive_js_message(
     handled: tuple[bool, object], message: str, context: any
 ):
-    if not isinstance(context, DeckBrowser):
-        # not reviewer, pass on message
+    global currentDeck
+
+    # For debugging
+    if len(sys.path) > sys_path_count:
         return handled
 
-    if message == "openAddDialog":
+    if not mw or not mw.col:
+        return handled
+
+    if not isinstance(context, DeckBrowser) and not isinstance(context, TopToolbar):
+        # We're only concerned with the deck browser and tooltip
+        return handled
+
+    if "setCurrentDeck" in message:
+        # our message, call onMark() on the reviewer instance
+        currentDeck = int(message.split(":")[1])
+
+        # and don't pass message to other handlers
+        return (True, None)
+    elif message == "openAddDialog":
         # our message, call onMark() on the reviewer instance
         mw.onAddCard()
         # and don't pass message to other handlers
+        return (True, None)
+    elif message == "addNote":
+        # Now select the deck with the given ID
+        mw.col.decks.select(currentDeck)
+        mw.onAddCard()
+
         return (True, None)
     else:
         # some other command, pass it on
