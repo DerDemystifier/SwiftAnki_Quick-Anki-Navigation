@@ -4,7 +4,7 @@ import sys
 from aqt import QWidget, mw, gui_hooks
 from aqt.deckbrowser import DeckBrowser, DeckBrowserContent
 from aqt.toolbar import TopToolbar
-from aqt.utils import tooltip, showInfo
+from aqt.utils import tooltip, showInfo, showText
 from aqt.qt import QShortcut, QKeySequence
 from aqt.main import MainWindowState
 
@@ -136,7 +136,22 @@ def on_webview_did_receive_js_message(
     elif message == "addNote":
         # Now select the deck with the given ID
         mw.col.decks.select(currentDeck)
+
         mw.onAddCard()
+
+        return (True, None)
+    elif message == "showDecks":
+        # Now select the deck with the given ID
+        mw.col.decks.select(currentDeck)
+
+        mw.moveToState("deckBrowser")
+
+        return (True, None)
+    elif message == "showStats":
+        # Now select the deck with the given ID
+        mw.col.decks.select(currentDeck)
+
+        mw.onStats()
 
         return (True, None)
     else:
@@ -148,3 +163,15 @@ def on_webview_did_receive_js_message(
 def on_focus_did_change(new: QWidget, old: QWidget):
     if mw.web.isVisible():
         mw.web.setFocus()
+
+
+@gui_hooks.top_toolbar_did_init_links.append
+def on_top_toolbar_did_init_links(links: list[str], top_toolbar):
+    # showText(str(links))
+    for index, link in enumerate(links):
+        if "pycmd('add')" in link:
+            links[index] = link.replace("pycmd('add')", "pycmd('addNote')")
+        elif "pycmd('decks')" in link:
+            links[index] = link.replace("pycmd('decks')", "pycmd('showDecks')")
+        elif "pycmd('stats')" in link:
+            links[index] = link.replace("pycmd('stats')", "pycmd('showStats')")
