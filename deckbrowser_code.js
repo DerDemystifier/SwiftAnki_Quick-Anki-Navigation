@@ -73,6 +73,9 @@ document.addEventListener('keydown', function (event) {
             var deckId = currentDeck.id;
             pycmd(`open:${deckId}`);
             break;
+        case 'KeyT':
+            pycmd("showStats");
+            break;
         case 'Enter':
             // Simulate click on the deck link within the selected deck
             var deckLink = currentDeck.querySelector('td.decktd > a.deck');

@@ -70,7 +70,7 @@ def on_state_did_change(new_state: MainWindowState, old_state: MainWindowState):
 
     if new_state == "deckBrowser":
         # Retrieve all QShortcut objects that are children of the main window
-        switchShortcutsTo("ASD", False)
+        switchShortcutsTo("ASDT", False)
         # widgets = [child for child in mw.children() if isinstance(child, QWidget)]
         # widgets = [child for child in widgets[0].children() if isinstance(child, QWidget)]
         # with open('R:/aa.txt', 'w') as f:
@@ -78,7 +78,7 @@ def on_state_did_change(new_state: MainWindowState, old_state: MainWindowState):
         # widgets[1].setFocus()
         mw.web.setFocus()
     else:
-        switchShortcutsTo("ASD", True)
+        switchShortcutsTo("ASDT", True)
 
 
 # @gui_hooks.state_shortcuts_will_change.append
