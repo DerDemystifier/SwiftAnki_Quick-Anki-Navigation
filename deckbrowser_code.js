@@ -1,3 +1,5 @@
+const currentDeckSelector = 'tr.deck.current';
+
 document.addEventListener('keydown', function (event) {
     var currentDeck = document.querySelector(currentDeckSelector);
     if (!currentDeck) return;
@@ -25,13 +27,12 @@ document.addEventListener('keydown', function (event) {
 
             pycmd(`setCurrentDeck:${nextDeck.id}`);
 
-            var scrollToDeck = decks[nextIndex + (direction === 'Up' ? -3 : 3)];
+            var scrollToDeckAhead = decks.slice(nextIndex - 3, nextIndex + 4).at(direction === 'Up' ? 0 : -1);
+            var scrollToDeckBehind = decks.slice(nextIndex - 3, nextIndex + 4).at(direction === 'Up' ? -1 : 0);
 
-            // Scroll into view if out of viewport
-            nextDeck.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-
-            // Scroll ahead to show neighbors too
-            scrollToDeck?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            // Scroll ahead and behind to show neighboring decks too
+            scrollToDeckBehind?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            scrollToDeckAhead?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
             break;
         case 'ArrowRight':
         case 'ArrowLeft':
@@ -87,7 +88,7 @@ document.addEventListener('keydown', function (event) {
 
 
 var observer = new IntersectionObserver(handleIntersect, { threshold: 1.0 });
-var currentDeckSelector = 'tr.deck.current';
+
 
 observer.observe(document.querySelector(currentDeckSelector));
 
