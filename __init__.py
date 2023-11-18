@@ -1,10 +1,9 @@
 import os
-import re
 import sys
 from aqt import QWidget, mw, gui_hooks
 from aqt.deckbrowser import DeckBrowser, DeckBrowserContent
 from aqt.toolbar import TopToolbar
-from aqt.utils import tooltip, showInfo, showText
+from aqt.utils import tooltip, showText
 from aqt.qt import QShortcut, QKeySequence
 from aqt.main import MainWindowState
 
@@ -15,8 +14,6 @@ if not mw:
 
 # For debugging
 sys_path_count = len(sys.path)
-
-# from PyQt6.QtWidgets import QShortcut
 
 
 @gui_hooks.deck_browser_did_render.append
@@ -161,7 +158,8 @@ def on_webview_did_receive_js_message(
 
 @gui_hooks.focus_did_change.append
 def on_focus_did_change(new: QWidget, old: QWidget):
-    if mw.web.isVisible():
+    # If the focus is on the toolbar or the bottom web, then we want to focus the main web view
+    if mw.toolbar.web.hasFocus() or mw.bottomWeb.hasFocus():
         mw.web.setFocus()
 
 
