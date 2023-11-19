@@ -1,104 +1,86 @@
+"use strict";
+
+const all_decks_selector = 'tr.deck';
 const currentDeckSelector = 'tr.deck.current';
 
 document.addEventListener('keydown', function (event) {
     var currentDeck = document.querySelector(currentDeckSelector);
     if (!currentDeck) return;
 
-    currentDeck.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-
     switch (event.code) {
         case 'ArrowUp':
+            var direction = "Up";
         case 'ArrowDown':
             event.preventDefault();
 
-            let direction = event.code === 'ArrowUp' ? "Up" : "Down";
+            var direction = direction || "Down";
 
-            var decks = Array.from(document.querySelectorAll('tr.deck'));
-            var currentIndex = decks.indexOf(currentDeck);
+            var all_decks = Array.from(document.querySelectorAll(all_decks_selector));
+            var currentIndex = all_decks.indexOf(currentDeck);
             var nextIndex = currentIndex + (direction === 'Up' ? -1 : 1);
 
             // Boundary conditions
-            if (nextIndex < 0 || nextIndex >= decks.length) { window.scrollBy({ top: direction === 'Up' ? -20 : 20, behavior: 'smooth' }); return; };
+            if (nextIndex == -1 || nextIndex == all_decks.length) {
+                window.scrollBy({ top: direction === 'Up' ? -20 : 20, behavior: 'smooth' });
+                return;
+            };
 
             // Remove 'current' class from the current deck and add it to the next one
             currentDeck.classList.remove('current');
-            var nextDeck = decks[nextIndex];
+            var nextDeck = all_decks[nextIndex];
             nextDeck.classList.add('current');
 
+            // Set the current selected deck. This is used in the backend to determine which deck is currently selected
             pycmd(`setCurrentDeck:${nextDeck.id}`);
 
-            var scrollToDeckAhead = decks.slice(nextIndex - 3, nextIndex + 4).at(direction === 'Up' ? 0 : -1);
-            var scrollToDeckBehind = decks.slice(nextIndex - 3, nextIndex + 4).at(direction === 'Up' ? -1 : 0);
 
-            // Scroll ahead and behind to show neighboring decks too
+            // Scroll ahead and behind of selected deck first to show neighboring decks too and ensure it is in plain view.
+            // First slice the array to get the decks ahead and behind of the selected deck, then scroll to the furthest.
+            var scrollToDeckAhead = all_decks.slice(nextIndex - 3, nextIndex + 4).at(direction === 'Up' ? 0 : -1);
+            var scrollToDeckBehind = all_decks.slice(nextIndex - 3, nextIndex + 4).at(direction === 'Up' ? -1 : 0);
+
             scrollToDeckBehind?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
             scrollToDeckAhead?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
             break;
         case 'ArrowRight':
         case 'ArrowLeft':
-            // Get the id of the current deck
-            var deckId = currentDeck.id;
-            // Check if a deckId was found and construct the pycmd
-            if (deckId) {
-                pycmd("select:" + deckId);
-            }
+            selectDeck(currentDeck.id);
+
             // Simulate click on the collapse/expand link within the selected deck
             var collapseLink = currentDeck.querySelector('td.decktd > a.collapse');
             if (collapseLink) collapseLink.click();
             break;
         case 'KeyO':
-            // Get the id of the current deck
-            var deckId = currentDeck.id;
-            // Check if a deckId was found and construct the pycmd
-            if (deckId) {
-                pycmd("select:" + deckId);
-            }
+            selectDeck(currentDeck.id);
+
             // Simulate click on the options link within the selected deck
             var optsLink = currentDeck.querySelector('td.opts > a');
             if (optsLink) optsLink.click();
             break;
         case 'KeyA':
+            selectDeck(currentDeck.id);
 
-            // Get the id of the current deck
-            var deckId = currentDeck.id;
-            // Check if a deckId was found and construct the pycmd
-            if (deckId) {
-                pycmd("select:" + deckId);
-            }
-
-            console.log('deckId :>> ', deckId);
             pycmd('openAddDialog');
             break;
+        case 'Enter':
         case 'KeyS':
-            // // Get the id of the current deck
-            var deckId = currentDeck.id;
-            pycmd(`open:${deckId}`);
+            pycmd(`open:${currentDeck.id}`);
             break;
         case 'KeyT':
             pycmd("showStats");
-            break;
-        case 'Enter':
-            // Simulate click on the deck link within the selected deck
-            var deckLink = currentDeck.querySelector('td.decktd > a.deck');
-            if (deckLink) deckLink.click();
             break;
     }
 });
 
 
 
-var observer = new IntersectionObserver(handleIntersect, { threshold: 1.0 });
-
-
-observer.observe(document.querySelector(currentDeckSelector));
-
-function handleIntersect(entries, observer) {
-    entries.forEach(entry => {
-        if (!entry.isIntersecting) {
-            // Element has gone out of view, scroll it into view
-            entry.target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-            observer.disconnect();
-        }
-    });
+/**
+ * Selects the deck with the given id in the backend. This is important for the backend to determine which deck is currently selected
+ * @param {number} deckId : The id of the deck to select
+ */
+function selectDeck(deckId) {
+    if (deckId) {
+        pycmd("select:" + deckId);
+    }
 }
 
