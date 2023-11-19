@@ -1,105 +1,55 @@
 import os
-import sys
 from aqt import QWidget, mw, gui_hooks
 from aqt.deckbrowser import DeckBrowser, DeckBrowserContent
 from aqt.toolbar import TopToolbar
-from aqt.utils import tooltip, showText
 from aqt.qt import QShortcut, QKeySequence
 from aqt.main import MainWindowState
 
 addon_path = os.path.dirname(os.path.realpath(__file__))
-
-if not mw:
-    quit()
-
-# For debugging
-sys_path_count = len(sys.path)
-
-
-@gui_hooks.deck_browser_did_render.append
-def browser_render(browser: DeckBrowser):
-    # For debugging
-    if len(sys.path) > sys_path_count:
-        return
-
-
-@gui_hooks.collection_did_load.append
-def on_collection_load(col):
-    # For debugging
-    if len(sys.path) > sys_path_count:
-        return
+currentDeck = 0  # tracks the current deck that is selected using the injected JS code
 
 
 @gui_hooks.deck_browser_will_render_content.append
 def on_deck_browser_will_render_content(
     deck_browser: DeckBrowser, content: DeckBrowserContent
 ):
-    # For debugging
-    if len(sys.path) > sys_path_count:
-        return
-
-    # Your custom JavaScript code
+    # Load our custom JavaScript for handling keyboard shortcuts
     with open(os.path.join(addon_path, "deckbrowser_code.js"), "r") as f:
         custom_js = f"<script>{f.read()}</script>"
 
     content.tree += custom_js  # Append your custom JavaScript to the tree_html
 
 
-@gui_hooks.state_shortcuts_will_change.append
-def on_state_shortcuts_will_change(state, shortcuts):
-    # For debugging
-    # if len(sys.path) > sys_path_count:
-    #     return
-
-    # showInfo("NOPE")
-    pass
-
-
 @gui_hooks.state_did_change.append
 def on_state_did_change(new_state: MainWindowState, old_state: MainWindowState):
-    # For debugging
-    if len(sys.path) > sys_path_count:
+    if not mw:
         return
 
-    # showInfo(new_state)
-
-    tooltip(new_state)
-
     if new_state == "deckBrowser":
-        # Retrieve all QShortcut objects that are children of the main window
+        # Disable the shortcuts in the deck browser
         switchShortcutsTo("ASDT", False)
-        # widgets = [child for child in mw.children() if isinstance(child, QWidget)]
-        # widgets = [child for child in widgets[0].children() if isinstance(child, QWidget)]
-        # with open('R:/aa.txt', 'w') as f:
-        #     f.write(str(widgets))
-        # widgets[1].setFocus()
         mw.web.setFocus()
     else:
         switchShortcutsTo("ASDT", True)
 
 
-# @gui_hooks.state_shortcuts_will_change.append
-# def on_state_shortcuts_will_change(state, shortcuts):
-# # For debugging
-# if len(sys.path) > sys_path_count:
-# return
-
-# switchShortcutsTo("ASD", True)
-
-
 def switchShortcutsTo(keys_string: str, state: bool):
+    """Switches the shortcuts to the given state
+
+    Args:
+        keys_string (str): the keys to switch
+        state (bool): the state to switch to
+    """
+    if not mw:
+        return
+
+    # Retrieve all the shortcuts in the main window
     shortcuts = [child for child in mw.children() if isinstance(child, QShortcut)]
 
-    # Now you can print out the key sequences of these shortcuts
     for shortcut in shortcuts:
         key_sequence = shortcut.key().toString(QKeySequence.SequenceFormat.NativeText)
         if key_sequence.upper() in keys_string:
-            # showInfo(key_sequence)
             shortcut.setEnabled(state)
-            # mw.releaseShortcut(shortcut)
-
-
-currentDeck = 0
 
 
 @gui_hooks.webview_did_receive_js_message.append
@@ -107,10 +57,6 @@ def on_webview_did_receive_js_message(
     handled: tuple[bool, object], message: str, context: any
 ):
     global currentDeck
-
-    # For debugging
-    if len(sys.path) > sys_path_count:
-        return handled
 
     if not mw or not mw.col:
         return handled
@@ -120,52 +66,42 @@ def on_webview_did_receive_js_message(
         return handled
 
     if "setCurrentDeck" in message:
-        # our message, call onMark() on the reviewer instance
+        # The arrow keys were pressed, so we need to update the current selected deck
         currentDeck = int(message.split(":")[1])
 
         # and don't pass message to other handlers
         return (True, None)
-    elif message == "openAddDialog":
-        # our message, call onMark() on the reviewer instance
-        mw.onAddCard()
+    else:
+        # Now select the deck with the given ID
+        mw.col.decks.select(currentDeck)
+
+        if message == "addNote":
+            mw.onAddCard()  # Open the add dialog for the current deck
+        elif message == "showDecks":
+            mw.moveToState("deckBrowser")
+        elif message == "showStats":
+            mw.onStats()
+        else:
+            # Return unhandled
+            return handled
+
         # and don't pass message to other handlers
         return (True, None)
-    elif message == "addNote":
-        # Now select the deck with the given ID
-        mw.col.decks.select(currentDeck)
-
-        mw.onAddCard()
-
-        return (True, None)
-    elif message == "showDecks":
-        # Now select the deck with the given ID
-        mw.col.decks.select(currentDeck)
-
-        mw.moveToState("deckBrowser")
-
-        return (True, None)
-    elif message == "showStats":
-        # Now select the deck with the given ID
-        mw.col.decks.select(currentDeck)
-
-        mw.onStats()
-
-        return (True, None)
-    else:
-        # some other command, pass it on
-        return handled
 
 
 @gui_hooks.focus_did_change.append
 def on_focus_did_change(new: QWidget, old: QWidget):
-    # If the focus is on the toolbar or the bottom web, then we want to focus the main web view
+    if not mw:
+        return
+
+    # If the focus is on the toolbar or the bottom web, then we want to switch focus to the main web view
     if mw.toolbar.web.hasFocus() or mw.bottomWeb.hasFocus():
         mw.web.setFocus()
 
 
 @gui_hooks.top_toolbar_did_init_links.append
 def on_top_toolbar_did_init_links(links: list[str], top_toolbar):
-    # showText(str(links))
+    # Replace the default links in the toolbar with our own
     for index, link in enumerate(links):
         if "pycmd('add')" in link:
             links[index] = link.replace("pycmd('add')", "pycmd('addNote')")

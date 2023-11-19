@@ -57,17 +57,18 @@ document.addEventListener('keydown', function (event) {
             var optsLink = currentDeck.querySelector('td.opts > a');
             if (optsLink) optsLink.click();
             break;
+        case 'KeyD':
+            pycmd("showDecks");
+            break;
         case 'KeyA':
-            selectDeck(currentDeck.id);
-
-            pycmd('openAddDialog');
+            pycmd('addNote');
+            break;
+        case 'KeyT':
+            pycmd("showStats");
             break;
         case 'Enter':
         case 'KeyS':
             pycmd(`open:${currentDeck.id}`);
-            break;
-        case 'KeyT':
-            pycmd("showStats");
             break;
     }
 });
@@ -75,7 +76,8 @@ document.addEventListener('keydown', function (event) {
 
 
 /**
- * Selects the deck with the given id in the backend. This is important for the backend to determine which deck is currently selected
+ * Selects the deck with the given id in the backend. This is important for the backend to determine which deck is currently selected.
+ * Equivalent to mw.col.decks.select(currentDeck)
  * @param {number} deckId : The id of the deck to select
  */
 function selectDeck(deckId) {
