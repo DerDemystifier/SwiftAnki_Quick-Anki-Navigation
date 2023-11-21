@@ -67,6 +67,7 @@ document.addEventListener('keydown', function (event) {
             pycmd("showStats");
             break;
         case 'Enter':
+		case 'NumpadEnter':
         case 'KeyS':
             pycmd(`open:${currentDeck.id}`);
             break;

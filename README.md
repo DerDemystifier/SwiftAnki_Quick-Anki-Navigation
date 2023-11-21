@@ -11,7 +11,7 @@ This Anki addon introduces keyboard shortcuts to facilitate efficient navigation
 **Keyboard Shortcuts for Navigation**: Enables users to navigate through Anki's DeckBrowser using keyboard only.
 
 <center>
-<video src="assets/vids/demo.mp4" controls width="100%" loop>
+<video src="assets/vids/demo.mp4" controls width="100%" loop></video>
 </center>
 
 ## Usage
