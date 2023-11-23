@@ -1,73 +1,76 @@
-"use strict";
+/* eslint-disable no-undef */
+/* eslint-disable no-fallthrough */
+'use strict';
 
-const all_decks_selector = "tr.deck";
-const currentDeckSelector = "tr.deck.current";
+const allDecksSelector = 'tr.deck';
+const currentDeckSelector = 'tr.deck.current';
 
-document.addEventListener("keydown", function (event) {
-    var currentDeck = document.querySelector(currentDeckSelector);
+document.addEventListener('keydown', function (event) {
+    const currentDeck = getCurrentDeck();
     if (!currentDeck) return;
 
+    let direction;
+
     switch (event.code) {
-        case "ArrowUp":
-            var direction = "Up";
-        case "ArrowDown":
+        case 'ArrowUp':
+            direction = 'Up';
+        case 'ArrowDown': {
             event.preventDefault();
 
-            var direction = direction || "Down";
+            direction = direction || 'Down';
 
-            var all_decks = Array.from(document.querySelectorAll(all_decks_selector));
-            var currentIndex = all_decks.indexOf(currentDeck);
-            var nextIndex = currentIndex + (direction === "Up" ? -1 : 1);
+            const allDecks = getAllDecks();
+            const currentIndex = allDecks.indexOf(currentDeck);
+            const nextIndex = currentIndex + (direction === 'Up' ? -1 : 1);
 
             // Boundary conditions
-            if (nextIndex == -1 || nextIndex == all_decks.length) {
-                window.scrollBy({ top: direction === "Up" ? -20 : 20, behavior: "smooth" });
+            if (nextIndex === -1 || nextIndex === allDecks.length) {
+                window.scrollBy({ top: direction === 'Up' ? -20 : 20, behavior: 'smooth' });
                 return;
             }
 
             // Remove 'current' class from the current deck and add it to the next one
-            currentDeck.classList.remove("current");
-            var nextDeck = all_decks[nextIndex];
-            nextDeck.classList.add("current");
+            currentDeck.classList.remove('current');
+            const nextDeck = allDecks[nextIndex];
+            nextDeck.classList.add('current');
 
             // Set the current selected deck. This is used in the backend to determine which deck is currently selected
             bridgeCommand(`setCurrentDeck:${nextDeck.id}`);
 
             // Scroll ahead and behind of selected deck first to show neighboring decks too and ensure it is in plain view.
             // First slice the array to get the decks ahead and behind of the selected deck, then scroll to the furthest.
-            var scrollToDeckAhead = all_decks.slice(nextIndex - 3, nextIndex + 4).at(direction === "Up" ? 0 : -1);
-            var scrollToDeckBehind = all_decks.slice(nextIndex - 3, nextIndex + 4).at(direction === "Up" ? -1 : 0);
-
-            scrollToDeckBehind?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-            scrollToDeckAhead?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+            scrollDeckIntoView(nextDeck, 3);
             break;
-        case "ArrowRight":
-        case "ArrowLeft":
+        }
+        case 'ArrowRight':
+        case 'ArrowLeft': {
             selectDeck(currentDeck.id);
 
             // Simulate click on the collapse/expand link within the selected deck
-            var collapseLink = currentDeck.querySelector("td.decktd > a.collapse");
-            if (collapseLink) collapseLink.click();
+            const collapseLink = currentDeck.querySelector('td.decktd > a.collapse');
+            collapseLink?.click();
             break;
-        case "KeyO":
+        }
+        case 'KeyO': {
             selectDeck(currentDeck.id);
 
             // Simulate click on the options link within the selected deck
-            var optsLink = currentDeck.querySelector("td.opts > a");
-            if (optsLink) optsLink.click();
+            const optsLink = currentDeck.querySelector('td.opts > a');
+            optsLink?.click();
             break;
-        case "KeyD":
-            bridgeCommand("showDecks");
+        }
+        case 'KeyD':
+            bridgeCommand('showDecks');
             break;
-        case "KeyA":
-            bridgeCommand("addNote");
+        case 'KeyA':
+            bridgeCommand('addNote');
             break;
-        case "KeyT":
-            bridgeCommand("showStats");
+        case 'KeyT':
+            bridgeCommand('showStats');
             break;
-        case "Enter":
-        case "NumpadEnter":
-        case "KeyS":
+        case 'Enter':
+        case 'NumpadEnter':
+        case 'KeyS':
             bridgeCommand(`open:${currentDeck.id}`);
             break;
     }
@@ -75,24 +78,17 @@ document.addEventListener("keydown", function (event) {
 
 (() => {
     // Create an observer to detect when the current deck goes out of view
-    var observer = new IntersectionObserver(handleIntersect, { threshold: 1.0 });
+    const observer = new IntersectionObserver(handleIntersect, { threshold: 1.0 });
 
     // Observe the current deck to check if it is not in view the first time the deck browser is loaded
-    observer.observe(document.querySelector(currentDeckSelector));
+    observer.observe(getCurrentDeck());
 
     function handleIntersect(entries, observer) {
         entries.forEach((entry) => {
             if (!entry.isIntersecting) {
                 // Element has gone out of view, scroll it into view
-                var currentDeck = entry.target;
-                var all_decks = Array.from(document.querySelectorAll(all_decks_selector));
-                var currentIndex = all_decks.indexOf(currentDeck);
-
-                var scrollToDeckAhead = all_decks.slice(currentIndex - 2, currentIndex + 3).at(0);
-                var scrollToDeckBehind = all_decks.slice(currentIndex - 2, currentIndex + 3).at(-1);
-
-                scrollToDeckBehind?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-                scrollToDeckAhead?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+                const currentDeck = entry.target;
+                scrollDeckIntoView(currentDeck, 3);
 
                 // Disconnect the observer since we only need to scroll the deck into view once
                 observer.disconnect();
@@ -113,6 +109,24 @@ document.addEventListener("keydown", function (event) {
  */
 function selectDeck(deckId) {
     if (deckId) {
-        bridgeCommand("select:" + deckId);
+        bridgeCommand('select:' + deckId);
     }
+}
+
+function getAllDecks() {
+    return Array.from(document.querySelectorAll(allDecksSelector));
+}
+
+function getCurrentDeck() {
+    return document.querySelector(currentDeckSelector);
+}
+
+function scrollDeckIntoView(deck, range) {
+    const allDecks = getAllDecks();
+    const currentIndex = allDecks.indexOf(deck);
+
+    const decksWithinRange = allDecks.slice(currentIndex - range, currentIndex + range + 1);
+
+    decksWithinRange.at(0)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    decksWithinRange.at(-1)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
