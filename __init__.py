@@ -103,9 +103,9 @@ def on_focus_did_change(new: QWidget, old: QWidget):
 def on_top_toolbar_did_init_links(links: list[str], top_toolbar):
     # Replace the default links in the toolbar with our own
     for index, link in enumerate(links):
-        if "pycmd('add')" in link:
-            links[index] = link.replace("pycmd('add')", "pycmd('addNote')")
-        elif "pycmd('decks')" in link:
-            links[index] = link.replace("pycmd('decks')", "pycmd('showDecks')")
-        elif "pycmd('stats')" in link:
-            links[index] = link.replace("pycmd('stats')", "pycmd('showStats')")
+        if "bridgeCommand('add')" in link:
+            links[index] = link.replace("bridgeCommand('add')", "bridgeCommand('addNote')")
+        elif "bridgeCommand('decks')" in link:
+            links[index] = link.replace("bridgeCommand('decks')", "bridgeCommand('showDecks')")
+        elif "bridgeCommand('stats')" in link:
+            links[index] = link.replace("bridgeCommand('stats')", "bridgeCommand('showStats')")

@@ -31,7 +31,7 @@ document.addEventListener('keydown', function (event) {
             nextDeck.classList.add('current');
 
             // Set the current selected deck. This is used in the backend to determine which deck is currently selected
-            pycmd(`setCurrentDeck:${nextDeck.id}`);
+            bridgeCommand(`setCurrentDeck:${nextDeck.id}`);
 
 
             // Scroll ahead and behind of selected deck first to show neighboring decks too and ensure it is in plain view.
@@ -58,18 +58,18 @@ document.addEventListener('keydown', function (event) {
             if (optsLink) optsLink.click();
             break;
         case 'KeyD':
-            pycmd("showDecks");
+            bridgeCommand("showDecks");
             break;
         case 'KeyA':
-            pycmd('addNote');
+            bridgeCommand('addNote');
             break;
         case 'KeyT':
-            pycmd("showStats");
+            bridgeCommand("showStats");
             break;
         case 'Enter':
 		case 'NumpadEnter':
         case 'KeyS':
-            pycmd(`open:${currentDeck.id}`);
+            bridgeCommand(`open:${currentDeck.id}`);
             break;
     }
 });
@@ -83,7 +83,7 @@ document.addEventListener('keydown', function (event) {
  */
 function selectDeck(deckId) {
     if (deckId) {
-        pycmd("select:" + deckId);
+        bridgeCommand("select:" + deckId);
     }
 }
 
