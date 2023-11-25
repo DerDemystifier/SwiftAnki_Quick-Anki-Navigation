@@ -7,7 +7,7 @@ This Anki addon introduces keyboard shortcuts to facilitate efficient navigation
 **Keyboard Shortcuts for Navigation**: Enables users to navigate through Anki's DeckBrowser using keyboard only.
 
 <center>
-<video src="https://derdemystifier.github.io/SwiftAnki_Quick-Anki-Navigation/assets/vids/demo.mp4" controls width="100%" loop></video>
+https://github.com/DerDemystifier/SwiftAnki_Quick-Anki-Navigation/assets/124774256/1531c20a-49db-4559-bd8d-cff6097655d1
 </center>
 
 ## Usage
