@@ -1,9 +1,5 @@
 # SwiftAnki: Quick Anki Navigation with Keyboard Shortcuts
 
-<center>
-<img src="assets/img/illustration.jpg" alt="SwiftAnki Addon" />
-</center>
-
 ## Overview
 
 This Anki addon introduces keyboard shortcuts to facilitate efficient navigation within Anki, reducing the dependency on mouse interactions. It's tailored to enhance the user experience by enabling more streamlined and quick access to various features within Anki's interface (mainly the DeckBrowser) using keyboard only.
@@ -11,7 +7,7 @@ This Anki addon introduces keyboard shortcuts to facilitate efficient navigation
 **Keyboard Shortcuts for Navigation**: Enables users to navigate through Anki's DeckBrowser using keyboard only.
 
 <center>
-<video src="assets/vids/demo.mp4" controls width="100%" loop></video>
+<video src="https://derdemystifier.github.io/SwiftAnki_Quick-Anki-Navigation/assets/vids/demo.mp4" controls width="100%" loop></video>
 </center>
 
 ## Usage
@@ -33,6 +29,10 @@ This Anki addon introduces keyboard shortcuts to facilitate efficient navigation
 
 -   Designed for compatibility with PyQt6 versions of Anki. Not tested in the older PyQt5.
 -   Tested on Anki 2.1.63 PyQt6 version. Should work for later versions unless stated otherwise.
+
+<center>
+<img src="https://derdemystifier.github.io/SwiftAnki_Quick-Anki-Navigation/assets/img/illustration.jpg" alt="SwiftAnki Addon" />
+</center>
 
 ## Support
 
