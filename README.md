@@ -6,13 +6,11 @@ This Anki addon introduces keyboard shortcuts to facilitate efficient navigation
 
 **Keyboard Shortcuts for Navigation**: Enables users to navigate through Anki's DeckBrowser using keyboard only.
 
-<center>
 https://github.com/DerDemystifier/SwiftAnki_Quick-Anki-Navigation/assets/124774256/1531c20a-49db-4559-bd8d-cff6097655d1
-</center>
 
 ## Usage
 
-1. Install the addon at [Anki Addons]().
+1. Install the addon at [Anki Addons](https://ankiweb.net/shared/info/1467361433).
 2. Restart Anki and that's it! Now you can navigate in the DeckBrowser without touching your mouse.
 
 ## Keyboard Shortcuts
@@ -36,7 +34,7 @@ https://github.com/DerDemystifier/SwiftAnki_Quick-Anki-Navigation/assets/1247742
 
 ## Support
 
-For queries or to report issues, please visit the [GitHub Repo Link] and add your issue in the 'Issues' tab.
+For queries or to report issues, please visit the [GitHub Repo](https://github.com/DerDemystifier/SwiftAnki_Quick-Anki-Navigation) and add your issue in the 'Issues' tab.
 
 ## Contributing
 
