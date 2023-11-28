@@ -30,9 +30,7 @@ document.addEventListener('keydown', function (event) {
             }
 
             // Remove 'current' class from the current deck and add it to the next one
-            currentDeck.classList.remove('current');
-            const nextDeck = allDecks[nextIndex];
-            nextDeck.classList.add('current');
+            const nextDeck = switchCurrentDeck(currentDeck, nextIndex);
 
             // Set the current selected deck. This is used in the backend to determine which deck is currently selected
             bridgeCommand(`setCurrentDeck:${nextDeck.id}`);
@@ -117,8 +115,25 @@ function getAllDecks() {
     return Array.from(document.querySelectorAll(allDecksSelector));
 }
 
+/**
+ * Returns the current selected deck. If no deck is selected, the first deck is selected and returned.
+ * @returns {HTMLElement} The current selected deck
+ */
 function getCurrentDeck() {
-    return document.querySelector(currentDeckSelector);
+    return document.querySelector(currentDeckSelector) || switchCurrentDeck(undefined, 0);
+}
+
+/**
+ * Removes the 'current' class from the current selected deck and adds it to the next deck.
+ * @param {HTMLElement} currentDeck  The current selected deck
+ * @param {number}  nextIndex The index of the next deck to select
+ * @returns {HTMLElement} The next selected deck
+ */
+function switchCurrentDeck(currentDeck, nextIndex) {
+    currentDeck?.classList.remove('current');
+    const nextDeck = getAllDecks()[nextIndex];
+    nextDeck.classList.add('current');
+    return nextDeck;
 }
 
 function scrollDeckIntoView(deck, range) {
