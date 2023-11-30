@@ -15,8 +15,8 @@ https://github.com/DerDemystifier/SwiftAnki_Quick-Anki-Navigation/assets/1247742
 
 ## Keyboard Shortcuts
 
--   **Arrow Up/Down**: Navigate up or down through the deck list.
--   **Arrow Right/Left**: Expand or collapse the currently selected deck.
+-   **Arrow Up/Down** or **Key K/J**: Navigate up or down through the deck list.
+-   **Arrow Left/Right** or **Key H/L**: Expand or collapse the currently selected deck.
 -   **Key O**: Open the options for the currently selected deck.
 -   **Key D**: Display the deck list.
 -   **Key A**: Add a new note to the current deck.
