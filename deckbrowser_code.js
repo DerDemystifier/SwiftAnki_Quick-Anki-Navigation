@@ -13,8 +13,10 @@ document.addEventListener('keydown', function (event) {
 
     switch (event.code) {
         case 'ArrowUp':
+        case 'KeyK':
             direction = 'Up';
-        case 'ArrowDown': {
+        case 'ArrowDown':
+        case 'KeyJ': {
             event.preventDefault();
 
             direction = direction || 'Down';
@@ -41,7 +43,9 @@ document.addEventListener('keydown', function (event) {
             break;
         }
         case 'ArrowRight':
-        case 'ArrowLeft': {
+        case 'KeyL':
+        case 'ArrowLeft':
+        case 'KeyH': {
             selectDeck(currentDeck.id);
 
             // Simulate click on the collapse/expand link within the selected deck
