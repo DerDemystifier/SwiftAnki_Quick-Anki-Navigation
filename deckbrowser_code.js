@@ -78,8 +78,8 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    // Create an observer to detect when the current deck goes out of view at deckBrowser load
+(() => {
+    // Create an observer to detect when the current deck goes out of view
     const observer = new IntersectionObserver(handleIntersect, { threshold: 1.0 });
 
     // Observe the current deck to check if it is not in view the first time the deck browser is loaded
@@ -98,11 +98,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Disconnect the observer after 500ms. Because the deckBrowser might load while the current deck is already in view. So no need to observe it.
+    // Disconnect the observer after 500ms. Because the deck browser might load while the current deck is in view. So no need observe it.
     setTimeout(() => {
         observer.disconnect();
     }, 500);
-});
+})();
 
 /**
  * Selects the deck with the given id in the backend. This is important for the backend to determine which deck is currently selected.
