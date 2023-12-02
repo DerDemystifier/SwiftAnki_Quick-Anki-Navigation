@@ -79,28 +79,11 @@ document.addEventListener('keydown', function (event) {
 });
 
 (() => {
-    // Create an observer to detect when the current deck goes out of view
-    const observer = new IntersectionObserver(handleIntersect, { threshold: 1.0 });
-
     // Observe the current deck to check if it is not in view the first time the deck browser is loaded
-    observer.observe(getCurrentDeck());
-
-    function handleIntersect(entries, observer) {
-        entries.forEach((entry) => {
-            if (!entry.isIntersecting) {
-                // Element has gone out of view, scroll it into view
-                const currentDeck = entry.target;
-                scrollDeckIntoView(currentDeck, 3);
-
-                // Disconnect the observer since we only need to scroll the deck into view once
-                observer.disconnect();
-            }
-        });
-    }
-
-    // Disconnect the observer after 500ms. Because the deck browser might load while the current deck is in view. So no need observe it.
     setTimeout(() => {
-        observer.disconnect();
+        const currentDeck = getCurrentDeck();
+
+        scrollDeckIntoView(currentDeck, 3);
     }, 500);
 })();
 
