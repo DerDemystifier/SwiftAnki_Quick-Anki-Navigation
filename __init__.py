@@ -65,12 +65,11 @@ def on_webview_did_receive_js_message(
         # We're only concerned with the deck browser and tooltip
         return handled
 
-    if "setCurrentDeck" in message:
-        # The arrow keys were pressed, so we need to update the current selected deck
+    if any(keyword in message for keyword in ["setCurrentDeck", "open", "collapse", "opts"]):
+        # Update the current selected deck with the current deck ID
         currentDeck = int(message.split(":")[1])
 
-        # and don't pass message to other handlers
-        return (True, None)
+        return handled
     else:
         # Now select the deck with the given ID
         mw.col.decks.select(currentDeck)
@@ -103,9 +102,9 @@ def on_focus_did_change(new: QWidget, old: QWidget):
 def on_top_toolbar_did_init_links(links: list[str], top_toolbar):
     # Replace the default links in the toolbar with our own
     for index, link in enumerate(links):
-        if "bridgeCommand('add')" in link:
-            links[index] = link.replace("bridgeCommand('add')", "bridgeCommand('addNote')")
-        elif "bridgeCommand('decks')" in link:
-            links[index] = link.replace("bridgeCommand('decks')", "bridgeCommand('showDecks')")
-        elif "bridgeCommand('stats')" in link:
-            links[index] = link.replace("bridgeCommand('stats')", "bridgeCommand('showStats')")
+        if "('add')" in link:
+            links[index] = link.replace("('add')", "('addNote')")
+        elif "('decks')" in link:
+            links[index] = link.replace("('decks')", "('showDecks')")
+        elif "('stats')" in link:
+            links[index] = link.replace("('stats')", "('showStats')")
