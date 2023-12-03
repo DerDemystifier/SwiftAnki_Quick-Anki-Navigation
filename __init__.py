@@ -27,10 +27,10 @@ def on_state_did_change(new_state: MainWindowState, old_state: MainWindowState):
 
     if new_state == "deckBrowser":
         # Disable the shortcuts in the deck browser
-        switchShortcutsTo("ASDT", False)
+        switchShortcutsTo("ASDTB", False)
         mw.web.setFocus()
     else:
-        switchShortcutsTo("ASDT", True)
+        switchShortcutsTo("ASDTB", True)
 
 
 def switchShortcutsTo(keys_string: str, state: bool):
@@ -65,7 +65,9 @@ def on_webview_did_receive_js_message(
         # We're only concerned with the deck browser and tooltip
         return handled
 
-    if any(keyword in message for keyword in ["setCurrentDeck", "open", "collapse", "opts"]):
+    if any(
+        keyword in message for keyword in ["setCurrentDeck", "open", "collapse", "opts"]
+    ):
         # Update the current selected deck with the current deck ID
         currentDeck = int(message.split(":")[1])
 
@@ -78,6 +80,8 @@ def on_webview_did_receive_js_message(
             mw.onAddCard()  # Open the add dialog for the current deck
         elif message == "showDecks":
             mw.moveToState("deckBrowser")
+        elif message == "browseDeck":
+            mw.onBrowse()  # Open the browser for the current deck
         elif message == "showStats":
             mw.onStats()
         else:
@@ -96,15 +100,3 @@ def on_focus_did_change(new: QWidget, old: QWidget):
     # If the focus is on the toolbar or the bottom web, then we want to switch focus to the main web view
     if mw.toolbar.web.hasFocus() or mw.bottomWeb.hasFocus():
         mw.web.setFocus()
-
-
-@gui_hooks.top_toolbar_did_init_links.append
-def on_top_toolbar_did_init_links(links: list[str], top_toolbar):
-    # Replace the default links in the toolbar with our own
-    for index, link in enumerate(links):
-        if "('add')" in link:
-            links[index] = link.replace("('add')", "('addNote')")
-        elif "('decks')" in link:
-            links[index] = link.replace("('decks')", "('showDecks')")
-        elif "('stats')" in link:
-            links[index] = link.replace("('stats')", "('showStats')")

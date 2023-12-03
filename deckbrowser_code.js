@@ -67,6 +67,10 @@ document.addEventListener('keydown', function (event) {
         case 'KeyA':
             bridgeCommand('addNote');
             break;
+        case 'KeyB':
+            selectDeck(currentDeck.id);
+            pycmd('browseDeck');
+            break;
         case 'KeyT':
             bridgeCommand('showStats');
             break;
