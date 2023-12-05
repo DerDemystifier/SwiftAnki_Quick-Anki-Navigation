@@ -74,6 +74,9 @@ document.addEventListener('keydown', function (event) {
         case 'KeyT':
             bridgeCommand('showStats');
             break;
+        case 'KeyY':
+            bridgeCommand('sync');
+            break;
         case 'Enter':
         case 'NumpadEnter':
         case 'KeyS':

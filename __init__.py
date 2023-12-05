@@ -27,10 +27,10 @@ def on_state_did_change(new_state: MainWindowState, old_state: MainWindowState):
 
     if new_state == "deckBrowser":
         # Disable the shortcuts in the deck browser
-        switchShortcutsTo("ASDTB", False)
+        switchShortcutsTo("ASDTBY", False)
         mw.web.setFocus()
     else:
-        switchShortcutsTo("ASDTB", True)
+        switchShortcutsTo("ASDTBY", True)
 
 
 def switchShortcutsTo(keys_string: str, state: bool):
@@ -54,7 +54,7 @@ def switchShortcutsTo(keys_string: str, state: bool):
 
 @gui_hooks.webview_did_receive_js_message.append
 def on_webview_did_receive_js_message(
-    handled: tuple[bool, object], message: str, context: any
+    handled: tuple[bool, object], message: str, context: object
 ):
     global currentDeck
 
@@ -84,6 +84,8 @@ def on_webview_did_receive_js_message(
             mw.onBrowse()  # Open the browser for the current deck
         elif message == "showStats":
             mw.onStats()
+        elif message == "sync":
+            mw.onSync()
         else:
             # Return unhandled
             return handled
