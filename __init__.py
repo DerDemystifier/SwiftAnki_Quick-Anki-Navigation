@@ -7,6 +7,7 @@ from aqt.main import MainWindowState
 
 addon_path = os.path.dirname(os.path.realpath(__file__))
 currentDeck = 0  # tracks the current deck that is selected using the injected JS code
+keys_disabled = False  # tracks whether the default shortcuts are disabled or not
 
 
 @gui_hooks.deck_browser_will_render_content.append
@@ -22,15 +23,18 @@ def on_deck_browser_will_render_content(
 
 @gui_hooks.state_did_change.append
 def on_state_did_change(new_state: MainWindowState, old_state: MainWindowState):
+    global keys_disabled
+
     if not mw:
         return
 
     if new_state == "deckBrowser":
-        # Disable the shortcuts in the deck browser
-        switchShortcutsTo("ASDTBY", False)
+        # We will only disable the shortcuts when the user changes the current deck later on
         mw.web.setFocus()
     else:
+        # Enable the shortcuts when the user is not in the deck browser
         switchShortcutsTo("ASDTBY", True)
+        keys_disabled = False
 
 
 def switchShortcutsTo(keys_string: str, state: bool):
@@ -56,7 +60,7 @@ def switchShortcutsTo(keys_string: str, state: bool):
 def on_webview_did_receive_js_message(
     handled: tuple[bool, object], message: str, context: object
 ):
-    global currentDeck
+    global currentDeck, keys_disabled
 
     if not mw or not mw.col:
         return handled
@@ -70,6 +74,11 @@ def on_webview_did_receive_js_message(
     ):
         # Update the current selected deck with the current deck ID
         currentDeck = int(message.split(":")[1])
+
+        if not keys_disabled:
+            # Disable the shortcuts in the deck browser since the current deck has changed
+            switchShortcutsTo("ASDTBY", False)
+            keys_disabled = True
 
         return handled
     else:
