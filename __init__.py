@@ -4,9 +4,16 @@ from aqt.deckbrowser import DeckBrowser, DeckBrowserContent
 from aqt.toolbar import TopToolbar
 from aqt.qt import QShortcut, QKeySequence
 from aqt.main import MainWindowState
+from anki.decks import DeckId # DeckId is an alias for int
+
+# imports used for debugging
+from aqt.utils import showInfo, showText
+
+from typing import Union
+
 
 addon_path = os.path.dirname(os.path.realpath(__file__))
-currentDeck = 0  # tracks the current deck that is selected using the injected JS code
+currentDeck: DeckId = DeckId(0)  # tracks the current deck that is selected using the injected JS code
 keys_disabled = False  # tracks whether the default shortcuts are disabled or not
 
 
@@ -29,7 +36,7 @@ def on_state_did_change(new_state: MainWindowState, old_state: MainWindowState):
         return
 
     if new_state == "deckBrowser":
-        # We will only disable the shortcuts when the user changes the current deck later on
+        # We will only disable the shortcuts when the user changes the selected deck later on
         mw.web.setFocus()
     else:
         # Enable the shortcuts when the user is not in the deck browser
@@ -70,13 +77,14 @@ def on_webview_did_receive_js_message(
         return handled
 
     if any(
-        keyword in message for keyword in ["setCurrentDeck", "open", "collapse", "opts"]
+        message.startswith(f"{keyword}:") for keyword in ["setCurrentDeck", "open", "collapse", "opts"]
     ):
         # Update the current selected deck with the current deck ID
-        currentDeck = int(message.split(":")[1])
+        currentDeck = DeckId(int(message.split(":")[1]))
 
         if not keys_disabled:
-            # Disable the shortcuts in the deck browser since the current deck has changed
+            # Disable the native shortcuts in the deck browser since the selected deck has changed
+            # The native shortcuts will function on the selected deck, not on the newly focused-on deck.
             switchShortcutsTo("ASDTBY", False)
             keys_disabled = True
 
@@ -104,7 +112,7 @@ def on_webview_did_receive_js_message(
 
 
 @gui_hooks.focus_did_change.append
-def on_focus_did_change(new: QWidget, old: QWidget):
+def on_focus_did_change(new: Union[QWidget, None], old: Union[QWidget, None]):
     if not mw:
         return
 
