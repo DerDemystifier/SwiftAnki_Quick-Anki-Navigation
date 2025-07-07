@@ -2,6 +2,10 @@
 /* eslint-disable no-fallthrough */
 'use strict';
 
+/**
+ * This script is fetched everytime the deck browser is switched to, so no need to worry about reloading the addon.
+ */
+
 const allDecksSelector = 'tr.deck';
 const currentDeckSelector = 'tr.deck.current';
 
@@ -13,9 +17,11 @@ document.addEventListener('keydown', function (event) {
 
     switch (event.code) {
         case 'ArrowUp':
+        case 'Numpad8':
         case 'KeyK':
             direction = 'Up';
         case 'ArrowDown':
+        case 'Numpad2':
         case 'KeyJ': {
             event.preventDefault();
 
@@ -43,8 +49,10 @@ document.addEventListener('keydown', function (event) {
             break;
         }
         case 'ArrowRight':
+        case 'Numpad6':
         case 'KeyL':
         case 'ArrowLeft':
+        case 'Numpad4':
         case 'KeyH': {
             selectDeck(currentDeck.id);
 

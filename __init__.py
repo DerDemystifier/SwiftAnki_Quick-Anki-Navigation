@@ -4,7 +4,7 @@ from aqt.deckbrowser import DeckBrowser, DeckBrowserContent
 from aqt.toolbar import TopToolbar
 from aqt.qt import QShortcut, QKeySequence
 from aqt.main import MainWindowState
-from anki.decks import DeckId # DeckId is an alias for int
+from anki.decks import DeckId  # DeckId is an alias for int
 
 # imports used for debugging
 from aqt.utils import showInfo, showText
@@ -13,14 +13,16 @@ from typing import Union
 
 
 addon_path = os.path.dirname(os.path.realpath(__file__))
-currentDeck: DeckId = DeckId(0)  # tracks the current deck that is selected using the injected JS code
-keys_disabled = False  # tracks whether the default shortcuts are disabled or not
+
+# tracks the current deck that is selected using the injected JS code
+currentDeck: DeckId = DeckId(0)
+
+# tracks whether the default shortcuts are disabled or not
+keys_disabled = False
 
 
 @gui_hooks.deck_browser_will_render_content.append
-def on_deck_browser_will_render_content(
-    deck_browser: DeckBrowser, content: DeckBrowserContent
-):
+def on_deck_browser_will_render_content(deck_browser: DeckBrowser, content: DeckBrowserContent):
     # Load our custom JavaScript for handling keyboard shortcuts
     with open(os.path.join(addon_path, "deckbrowser_code.js"), "r") as f:
         custom_js = f"<script>{f.read()}</script>"
@@ -64,9 +66,7 @@ def switchShortcutsTo(keys_string: str, state: bool):
 
 
 @gui_hooks.webview_did_receive_js_message.append
-def on_webview_did_receive_js_message(
-    handled: tuple[bool, object], message: str, context: object
-):
+def on_webview_did_receive_js_message(handled: tuple[bool, object], message: str, context: object):
     global currentDeck, keys_disabled
 
     if not mw or not mw.col:
@@ -77,7 +77,8 @@ def on_webview_did_receive_js_message(
         return handled
 
     if any(
-        message.startswith(f"{keyword}:") for keyword in ["setCurrentDeck", "open", "collapse", "opts"]
+        message.startswith(f"{keyword}:")
+        for keyword in ["setCurrentDeck", "open", "collapse", "opts"]
     ):
         # Update the current selected deck with the current deck ID
         currentDeck = DeckId(int(message.split(":")[1]))
